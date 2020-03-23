@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>modbus</title>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+		<script>
+			function start() {
+				setInterval(() => {
+					fetch("sensor.json")
+					.then(response => response.json())
+					.then(data => {document.getElementById('temp').innerHTML = data.temp})
+				},  100)
+			}
+		</script>
+	</head>
+	<body onload='start()'>
+		<div style="font-size: 155px;" id="temp"></div>
+	</body>
+</html>
