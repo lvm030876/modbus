@@ -1,6 +1,9 @@
 const express = require("express");
 const modbus = require('jsmodbus')
 const net = require('net')
+// const ipdevice = '10.49.9.1'    // бурові насоси
+const ipdevice = '127.0.0.1'
+const portdevice = '502'
 
 var myData = 0
 
@@ -15,15 +18,20 @@ app.listen(3000)
 
 const socket = new net.Socket()
 const options = {
-  'host': '127.0.0.1',
-  'port': '502'
+  'host': ipdevice,
+  'port': portdevice
 }
 const client = new modbus.client.TCP(socket)
 
 function fun() {
-    client.readHoldingRegisters(0, 1)
+    const mp1tick = client.readHoldingRegisters(9134, 1)
+    const mp2tick = client.readHoldingRegisters(9234, 1)
+    const mp3tick = client.readHoldingRegisters(9334, 1)
+    Promise.all([mp1tick, mp2tick, mp3tick])
     .then(function (resp) {
-        myData = resp.response._body._values[0]
+        myData = resp[0].response._body._values[0]  // количество ходов первого насоса
+        myData = resp[1].response._body._values[0]  // количество ходов второго насоса
+        myData = resp[2].response._body._values[0]  // количество ходов третьего насоса
         setTimeout(fun, 100)
     })
     .catch(function (e) {
